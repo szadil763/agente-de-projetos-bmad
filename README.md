@@ -1,4 +1,4 @@
-# meu-projeto
+# agente-de-projetos-bmad
 
 Projeto com BMAD Method v6.12.4 instalado para Claude Code.
 
