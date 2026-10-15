@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Temporada do Robô</title>
+<style>
+/* Página-lembrança do brainstorming do robo-qlearning, gerada a partir do .memlog.md da sessão. */
+:root{
+  --bg:#F4EFE6; --surface:#FFFBF4; --ink:#1E1A16; --muted:#6B6158; --line:#E2D8C8;
+  --pla:#E0530B; --pla-soft:#FBE3D3; --q:#0E7C6B; --q-soft:#D5EFEA; --sombra:0 1px 0 rgba(0,0,0,.04);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15120F; --surface:#1F1B17; --ink:#F2EBE1; --muted:#A99D90; --line:#3A332C;
+    --pla:#FF7A33; --pla-soft:#3A2416; --q:#3FC2AA; --q-soft:#14332E; --sombra:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15120F; --surface:#1F1B17; --ink:#F2EBE1; --muted:#A99D90; --line:#3A332C;
+  --pla:#FF7A33; --pla-soft:#3A2416; --q:#3FC2AA; --q-soft:#14332E; --sombra:none;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1080px;margin:0 auto;padding:0 16px 64px}
+h1,h2,h3,h4{line-height:1.15;margin:0}
+.capa{padding:56px 0 32px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}
+.capa .selo{font:600 12px/1 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--pla)}
+.capa h1{font-size:clamp(2.2rem,6vw,4rem);font-weight:800;letter-spacing:-.02em;margin:10px 0 12px}
+.capa p{color:var(--muted);max-width:56ch;margin:0}
+.robo{width:150px;height:120px;border-radius:22px;background:var(--pla);position:relative;box-shadow:0 10px 0 -2px color-mix(in srgb,var(--pla) 70%,#000)}
+.tela{position:absolute;inset:18px 16px 30px;background:#0B0F12;border-radius:10px;display:flex;justify-content:center;align-items:center;gap:22px}
+.olho{width:22px;height:26px;background:#7CF2DA;border-radius:50%;animation:piscar 4s infinite}
+.roda{position:absolute;bottom:-12px;width:34px;height:34px;border-radius:50%;background:var(--ink)}
+@keyframes piscar{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@media (prefers-reduced-motion:reduce){.olho{animation:none}}
+.placar{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:8px 0 40px}
+.placar > div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--sombra)}
+.placar > div > b{display:block;font-size:2rem;font-weight:800}
+.placar > div > span{color:var(--muted);font-size:.9rem}
+.barra{height:10px;border-radius:99px;background:var(--q-soft);overflow:hidden;margin-top:8px;display:flex}
+.barra i,.barra u{display:block;height:100%} .barra i{background:var(--pla)} .barra u{background:var(--q);text-decoration:none}
+h2{font-size:1.6rem;font-weight:800;margin:48px 0 6px}
+.sub{color:var(--muted);margin:0 0 20px}
+.ep{background:var(--surface);border:1px solid var(--line);border-radius:18px;margin:0 0 20px;overflow:hidden;box-shadow:var(--sombra)}
+.ep-cab{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;padding:18px 20px;border-bottom:1px solid var(--line)}
+.ep-num{font:700 13px/1 ui-monospace,monospace;background:var(--ink);color:var(--bg);padding:8px 10px;border-radius:8px}
+.ep-cab h3{font-size:1.25rem} .ep-cab p{margin:2px 0 0;color:var(--muted);font-size:.92rem}
+.ep-cont{font:500 12px/1.3 ui-monospace,monospace;color:var(--muted);text-align:right}
+.blocos{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:0}
+.bloco{padding:16px 20px;border-top:1px dashed var(--line)}
+.bloco h4{font-size:.95rem;margin-bottom:10px} .bloco small{color:var(--muted);font-weight:500}
+.bloco ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.ideia{font-size:.93rem;padding:8px 10px 8px 12px;border-radius:10px;border-left:4px solid}
+.ideia.seu{background:var(--pla-soft);border-color:var(--pla)}
+.ideia.mary{background:var(--q-soft);border-color:var(--q)}
+.quem{display:block;font:600 11px/1.4 ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;opacity:.75}
+.legenda{display:flex;gap:16px;flex-wrap:wrap;font-size:.9rem;color:var(--muted);margin-bottom:16px}
+.legenda i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.mapa{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.quad{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.quad:first-child{background:var(--q-soft);border-color:var(--q)}
+.quad h4{font-size:1.05rem} .quad small{color:var(--muted);font:500 12px/1.4 ui-monospace,monospace}
+.quad ul{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+.quad li{display:flex;gap:10px;align-items:center;font-size:.95rem;color:var(--muted)}
+.quad li b{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--muted);color:var(--ink)}
+.quad li.ok{color:var(--ink);font-weight:600} .quad li.ok b{background:var(--pla);border-color:var(--pla);color:#fff}
+.quad li.vazio{font-style:italic}
+.climax{margin-top:48px;background:var(--ink);color:var(--bg);border-radius:24px;padding:36px 28px}
+.climax .selo{font:600 12px/1 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--pla)}
+.climax h2{color:var(--bg);margin:10px 0 8px;font-size:clamp(1.6rem,4vw,2.4rem)}
+.climax > p{opacity:.8;max-width:60ch}
+.caps{list-style:none;padding:0;margin:24px 0 0;display:grid;grid-template-columns:repeat(5,1fr);gap:10px;counter-reset:c}
+.caps li{border:1px solid color-mix(in srgb,var(--bg) 25%,transparent);border-radius:14px;padding:14px;counter-increment:c}
+.caps li::before{content:"Cap. " counter(c);font:600 11px/1 ui-monospace,monospace;color:var(--pla);display:block;margin-bottom:8px}
+.caps b{display:block} .caps span{display:block;font-size:.85rem;opacity:.75;margin:4px 0 6px} .caps em{font-size:.75rem;opacity:.6}
+.dores{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}
+.dores div{background:color-mix(in srgb,var(--bg) 8%,transparent);border-radius:14px;padding:14px;font-size:.9rem}
+.dores b{display:block;color:var(--pla)}
+.rodape{color:var(--muted);font-size:.85rem;margin-top:32px}
+@media (max-width:760px){
+  .capa{grid-template-columns:1fr} .robo{width:120px;height:96px}
+  .placar{grid-template-columns:repeat(2,1fr)}
+  .ep-cab{grid-template-columns:auto 1fr} .ep-cont{grid-column:1/-1;text-align:left}
+  .blocos{grid-template-columns:1fr}
+  .caps,.dores{grid-template-columns:1fr}
+  .mapa{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<main>
+  <section class="capa">
+    <div>
+      <span class="selo">Sessão de brainstorming · robo-qlearning · 15/10/2026</span>
+      <h1>A Temporada do Robô</h1>
+      <p>Cem ideias para um robô que aprende sozinho a desviar de obstáculos, geradas por Adilson e Mary (agente analista do BMAD) em quatro episódios. No fim, elas convergiram para um personagem só.</p>
+    </div>
+    <div class="robo" aria-hidden="true"><div class="tela"><span class="olho"></span><span class="olho"></span></div><span class="roda" style="left:14px"></span><span class="roda" style="right:14px"></span></div>
+  </section>
+
+  <section class="placar">
+    <div><b>100</b><span>ideias no total</span></div>
+    <div><b>40</b><span>ideias do Adilson</span></div>
+    <div><b>60</b><span>ideias da Mary</span></div>
+    <div><b>4</b><span>técnicas (episódios)</span>
+      <div class="barra" title="Proporção de autoria"><i style="width:40%"></i><u style="width:60%"></u></div></div>
+  </section>
+
+  <h2>Os episódios</h2>
+  <p class="sub">Cada técnica foi um episódio. As ideias aparecem na ordem em que surgiram.</p>
+  <div class="legenda"><span><i style="background:var(--pla)"></i>Ideia do Adilson</span><span><i style="background:var(--q)"></i>Ideia da Mary</span></div>
+  
+<section class="ep">
+  <header class="ep-cab">
+    <span class="ep-num">Ep. 1</span>
+    <div><h3>Na pele de quem usa</h3><p>Aluno de 15 anos, coordenadora de escola particular e professor da rede pública.</p></div>
+    <span class="ep-cont">26 ideias · acumulado 26</span>
+  </header>
+  <div class="blocos"><div class="bloco"><h4>Aluno de 15 anos <small>15</small></h4><ul><li class="ideia mary"><span class="quem">Mary</span>Robô com nome e perfil: a tabela Q vira um 'pet' que a turma acompanha crescer, com conquistas diárias</li><li class="ideia seu"><span class="quem">Adilson</span>Trazer para o robô o que atrai o aluno ao celular: lógica de jogo e de rede social</li><li class="ideia mary"><span class="quem">Mary</span>Feed do robô: a cada tentativa o robô 'posta' o que aprendeu (stories com a jogada, curtidas = recompensa)</li><li class="ideia mary"><span class="quem">Mary</span>Liga entre turmas: cada turma treina seu robô e os cérebros (JSON) disputam no mesmo labirinto do simulador, com ranking</li><li class="ideia seu"><span class="quem">Adilson</span>Criar expectativa e suspense como numa série: o aluno quer saber o que acontece no próximo episódio</li><li class="ideia mary"><span class="quem">Mary</span>Temporada do robô: cada aula é um episódio com gancho final — o robô treina durante a semana (ou entre aulas) e a turma só vê o resultado no próximo encontro</li><li class="ideia mary"><span class="quem">Mary</span>Aposta de palpite: no fim da aula, cada aluno prevê quantas tentativas o robô vai precisar ou qual ação a tabela Q vai escolher; revelação no episódio seguinte (usa o modo adivinhar do simulador)</li><li class="ideia seu"><span class="quem">Adilson</span>O plot twist precisa ser algo inusitado, que vá além de errar e acertar (que todos já esperam)</li><li class="ideia mary"><span class="quem">Mary</span>Twist 'o robô trapaceou': recompensas mal desenhadas fazem o robô achar um atalho absurdo (ex.: girar parado para nunca bater) — ensina reward hacking</li><li class="ideia mary"><span class="quem">Mary</span>Twist 'o mundo mudou': professor muda os obstáculos em segredo e o robô 'campeão' passa a errar — ensina que a IA só sabe o que viu</li><li class="ideia mary"><span class="quem">Mary</span>Twist 'transplante de cérebro': o robô da turma recebe o cérebro (JSON) treinado por outra turma e se comporta como estranho</li><li class="ideia seu"><span class="quem">Adilson</span>Twist nos alunos: eles viram o robô, enfrentando um cenário novo com o mesmo ciclo perceber-escolher-agir-recompensa-aprender</li><li class="ideia mary"><span class="quem">Mary</span>Aluno-robô vendado: labirinto de cones na quadra, aluno de olhos vendados só 'percebe' pelo toque de um colega; a turma dá recompensa com apito e preenche a tabela Q num cartaz</li><li class="ideia mary"><span class="quem">Mary</span>Corrida humano x máquina: turma e robô começam do zero no mesmo labirinto; quem aprende em menos tentativas? (compara gráficos de aprendizado)</li><li class="ideia mary"><span class="quem">Mary</span>Kit desplugado de Q-learning: tabuleiro + cartas de ação + fichas de recompensa — vendável sem eletrônica e sem risco Inmetro de bateria</li></ul></div><div class="bloco"><h4>Coordenadora pedagógica de escola particular <small>7</small></h4><ul><li class="ideia seu"><span class="quem">Adilson</span>Coordenadora compra o que mostra resultado e dá à escola um diferencial</li><li class="ideia mary"><span class="quem">Mary</span>Mostra de IA para os pais: final da temporada vira evento aberto, cada turma apresenta seu robô treinado e o 'diário de bordo' do aprendizado</li><li class="ideia mary"><span class="quem">Mary</span>Relatório automático de resultado: o painel exporta o CSV e gera um relatório da turma (habilidades BNCC Computação trabalhadas, evolução, fotos) para a coordenação mostrar aos pais</li><li class="ideia mary"><span class="quem">Mary</span>Selo 'Escola que ensina IA de verdade': certificado para a escola e para os alunos, ligado às habilidades da BNCC Computação</li><li class="ideia seu"><span class="quem">Adilson</span>Resultado para postar: vídeo do robô treinado pelos alunos + empolgação da turma participando da aula</li><li class="ideia mary"><span class="quem">Mary</span>Vídeo 'antes e depois' gerado automaticamente: simulador grava a tentativa 1 (batendo) e a tentativa final (perfeita) lado a lado, com a tabela Q mudando — pronto para Reels</li><li class="ideia mary"><span class="quem">Mary</span>Trailer da temporada: roteiro e kit de gravação para os próprios alunos editarem o 'episódio final' (une com as aulas de linguagens)</li></ul></div><div class="bloco"><h4>Professor da rede pública que nunca programou, 45 alunos, aula de 50 min <small>4</small></h4><ul><li class="ideia seu"><span class="quem">Adilson</span>Mostrar que, apesar de inovador, o processo é simples e agrega valor também ao professor, não só aos alunos</li><li class="ideia mary"><span class="quem">Mary</span>Aula-roteiro de 50 min em 1 página: minuto a minuto, com falas sugeridas e o que clicar — o professor não precisa saber programar</li><li class="ideia mary"><span class="quem">Mary</span>Modo projetor/45 alunos: um robô (ou só o simulador) para a sala inteira; alunos participam por papéis (sensor, juiz de recompensa, anotador da tabela Q) em vez de um kit por grupo</li><li class="ideia mary"><span class="quem">Mary</span>Professor ganha também: certificado de formação em IA (horas) e trilha 'professor aprendiz' em que ele mesmo treina o robô antes da aula</li></ul></div></div>
+</section>
+<section class="ep">
+  <header class="ep-cab">
+    <span class="ep-num">Ep. 2</span>
+    <div><h3>Mexendo no robô</h3><p>Substituir, Combinar, Adaptar, Modificar, Outro uso, Eliminar, Reverter.</p></div>
+    <span class="ep-cont">40 ideias · acumulado 66</span>
+  </header>
+  <div class="blocos"><div class="bloco"><h4>S · Substituir <small>4</small></h4><ul><li class="ideia seu"><span class="quem">Adilson</span>Substituir a recompensa</li><li class="ideia seu"><span class="quem">Adilson</span>Substituir o sensor ultrassônico por câmera que reconhece padrões e cores</li><li class="ideia mary"><span class="quem">Mary</span>Recompensa vinda dos alunos: botões/celulares da turma dão +1/-1 ao vivo (recompensa humana, como RLHF dos chatbots)</li><li class="ideia mary"><span class="quem">Mary</span>ESP32-CAM lê cores no chão: verde = recompensa, vermelho = punição, azul = chegada — a arena vira o 'mapa de recompensas' desenhado pelos alunos</li></ul></div><div class="bloco"><h4>C · Combinar <small>9</small></h4><ul><li class="ideia seu"><span class="quem">Adilson</span>Combinar com Matemática</li><li class="ideia seu"><span class="quem">Adilson</span>Combinar com Física</li><li class="ideia seu"><span class="quem">Adilson</span>Combinar com Geografia</li><li class="ideia seu"><span class="quem">Adilson</span>Combinar com geolocalização</li><li class="ideia seu"><span class="quem">Adilson</span>Combinar com Estatística</li><li class="ideia mary"><span class="quem">Mary</span>Matemática: a tabela Q é uma matriz; a fórmula Q ← Q + α(r + γ·max − Q) vira aula de média ponderada; o ε que decai é função exponencial — fichas por série alinhadas ao Currículo Priorizado SEDUC-SP</li><li class="ideia mary"><span class="quem">Mary</span>Estatística: o CSV do painel vira base de dados real da turma — média móvel das batidas, gráfico de dispersão, comparar turmas com boxplot</li><li class="ideia mary"><span class="quem">Mary</span>Física: medir velocidade e tempo de frenagem do robô, atrito em pisos diferentes; o robô aprende de novo quando muda o piso</li><li class="ideia mary"><span class="quem">Mary</span>Geografia + geolocalização: labirinto no formato do mapa do bairro/cidade (plano cartesiano = coordenadas); versão externa com GPS para o robô aprender rota no pátio</li></ul></div><div class="bloco"><h4>A · Adaptar <small>8</small></h4><ul><li class="ideia seu"><span class="quem">Adilson</span>Adaptar Minecraft</li><li class="ideia seu"><span class="quem">Adilson</span>Adaptar Reels do Instagram</li><li class="ideia seu"><span class="quem">Adilson</span>Adaptar YouTube</li><li class="ideia seu"><span class="quem">Adilson</span>Adaptar Roblox</li><li class="ideia mary"><span class="quem">Mary</span>Modo construtor estilo Minecraft no simulador: alunos montam o próprio labirinto bloco a bloco e trocam fases por código/QR</li><li class="ideia mary"><span class="quem">Mary</span>Mundo no Roblox: experiência 'Escola de Robôs' onde o jogador treina um robô com tabela Q visível; o simulador vira porta de entrada viral (a pesquisa diz: grátis é canal)</li><li class="ideia mary"><span class="quem">Mary</span>Formato Reels de 60 s: cada episódio da temporada tem um corte vertical automático com legenda do que o robô aprendeu</li><li class="ideia mary"><span class="quem">Mary</span>Canal YouTube 'Robô aprendendo' com os desafios da semana — professores de outras escolas mandam labirintos e cérebros para o robô enfrentar</li></ul></div><div class="bloco"><h4>M · Modificar <small>4</small></h4><ul><li class="ideia seu"><span class="quem">Adilson</span>Disputa entre robôs para ver qual aprende mais rápido</li><li class="ideia mary"><span class="quem">Mary</span>Mesmo robô, parâmetros diferentes: cada grupo escolhe α, γ, ε e recompensas no painel; os robôs largam juntos e o ranking mostra qual 'personalidade' aprende mais rápido (Laboratório de parâmetros vira esporte)</li><li class="ideia mary"><span class="quem">Mary</span>Enxame: vários robôs compartilham uma única tabela Q via Wi-Fi e aprendem juntos — comparar 1 robô x 5 robôs (aprendizado coletivo)</li><li class="ideia mary"><span class="quem">Mary</span>Campeonato intercolegial de Q-learning: regras fixas de hardware, vence quem treina melhor — formato tipo OBR/FLL, fonte de venda de kits</li></ul></div><div class="bloco"><h4>P · Outro uso <small>6</small></h4><ul><li class="ideia seu"><span class="quem">Adilson</span>Usar o robô em questões sociais da escola: apoiar alunos com deficiência visual</li><li class="ideia seu"><span class="quem">Adilson</span>Usar o robô para apoiar alunos autistas a identificar padrões</li><li class="ideia mary"><span class="quem">Mary</span>Robô que narra: modo áudio em que o robô fala o que percebe, o que escolheu e a recompensa (buzzer/alto-falante + celular) — aluno cego participa da aula inteira</li><li class="ideia mary"><span class="quem">Mary</span>Tabela Q tátil: impressa em 3D em relevo/Braille, com peças móveis para o valor de cada célula — mesmo gerador de STL do projeto</li><li class="ideia mary"><span class="quem">Mary</span>Ciclo previsível e visual (5 telas do OLED + cartões de rotina) como apoio a alunos autistas; papéis fixos e claros no grupo</li><li class="ideia mary"><span class="quem">Mary</span>Co-criar a versão inclusiva com a professora do AEE e publicar como relato (Revista DoCEntes) — sem prometer efeito terapêutico</li></ul></div><div class="bloco"><h4>E · Eliminar <small>5</small></h4><ul><li class="ideia seu"><span class="quem">Adilson</span>Eliminar cabos e excesso de fios</li><li class="ideia mary"><span class="quem">Mary</span>Placa única (PCB) própria encaixada no chassi: ESP32, driver, conectores do sensor/OLED/LEDs já soldados — montagem sem jumper, em 15 min</li><li class="ideia mary"><span class="quem">Mary</span>Conectores de encaixe com cor e formato únicos (tipo JST/Grove) — impossível ligar errado, elimina o divisor de tensão na protoboard</li><li class="ideia mary"><span class="quem">Mary</span>Eliminar o computador: tudo pelo celular via painel Wi-Fi (já existe) — escola sem laboratório de informática também usa</li><li class="ideia mary"><span class="quem">Mary</span>Eliminar o robô para quem não pode comprar: simulador + kit desplugado como versão de entrada</li></ul></div><div class="bloco"><h4>R · Reverter <small>4</small></h4><ul><li class="ideia seu"><span class="quem">Adilson</span>Inverter: o robô vira tutor e ensina aos alunos como ele pensa</li><li class="ideia mary"><span class="quem">Mary</span>Robô que se explica: a cada escolha ele justifica em linguagem simples ('escolhi virar à esquerda porque na última vez que vi parede a 10 cm, virar me deu +5') — IA explicável na prática</li><li class="ideia mary"><span class="quem">Mary</span>Robô que pergunta: antes de agir, ele pausa e pergunta à turma 'o que vocês fariam?' e depois compara com a própria tabela Q</li><li class="ideia mary"><span class="quem">Mary</span>Robô que erra de propósito: o tutor faz uma escolha errada e desafia os alunos a descobrir qual valor da tabela o enganou</li></ul></div></div>
+</section>
+<section class="ep">
+  <header class="ep-cab">
+    <span class="ep-num">Ep. 3</span>
+    <div><h3>Como fazer dar tudo errado</h3><p>Cada fracasso, invertido, virou uma ideia.</p></div>
+    <span class="ep-cont">17 ideias · acumulado 83</span>
+  </header>
+  <div class="blocos"><div class="bloco"><h4>Fracassos de produto <small>8</small></h4><ul><li class="ideia seu"><span class="quem">Adilson</span>Fracasso: robô sem atratividade</li><li class="ideia seu"><span class="quem">Adilson</span>Fracasso: robô muito caro</li><li class="ideia seu"><span class="quem">Adilson</span>Fracasso: robô esteticamente feio</li><li class="ideia seu"><span class="quem">Adilson</span>Fracasso: não mostrar às escolas que o robô é necessário</li><li class="ideia mary"><span class="quem">Mary</span>Inverso de feio: robô com 'rosto' (OLED com olhos que mudam de expressão conforme a recompensa) e casca personalizável impressa pela turma — cada robô tem identidade</li><li class="ideia mary"><span class="quem">Mary</span>Inverso de caro: versão em degraus — grátis (simulador), R$ ~50 (desplugado), kit robô, kit + formação; e 'faça você mesmo' com STL abertos para quem tem impressora</li><li class="ideia mary"><span class="quem">Mary</span>Inverso de sem atrativo: unboxing com missão — a caixa já vem com o episódio 1 e um QR para o trailer</li><li class="ideia mary"><span class="quem">Mary</span>Inverso de não mostrar necessidade: mapa 'BNCC Computação 2026 → aula do robô' de 1 página, mostrando quais habilidades obrigatórias o kit cobre (argumento do VAAR/Fundeb)</li></ul></div><div class="bloco"><h4>Fracassos em sala de aula <small>9</small></h4><ul><li class="ideia seu"><span class="quem">Adilson</span>Fracasso: robô de difícil manipulação</li><li class="ideia seu"><span class="quem">Adilson</span>Fracasso: demora para ver resultado em aula</li><li class="ideia seu"><span class="quem">Adilson</span>Fracasso: muitas tentativas deixam alunos entediados (alunos imediatistas)</li><li class="ideia seu"><span class="quem">Adilson</span>Fracasso: professor percebe alunos desestimulados e abandona</li><li class="ideia mary"><span class="quem">Mary</span>Botão 'avançar o tempo': robô físico mostra 10 tentativas reais e o simulador acelera 500 tentativas em 30 s com o mesmo cérebro — resultado na hora</li><li class="ideia mary"><span class="quem">Mary</span>Primeira vitória garantida em 5 min: a aula 1 começa com um cérebro 'quase pronto' que só precisa de poucas tentativas</li><li class="ideia mary"><span class="quem">Mary</span>Barra de progresso e conquistas visíveis (primeira esquiva, 10 sem bater, recorde da turma) — micro-recompensas para os alunos também</li><li class="ideia mary"><span class="quem">Mary</span>Ligar e já funcionar: robô sai da caixa com firmware e modo demo; zero instalação no dia 1</li><li class="ideia mary"><span class="quem">Mary</span>Termômetro de engajamento: professor marca no painel como a turma reagiu; o material sugere a próxima atividade se a turma esfriar</li></ul></div></div>
+</section>
+<section class="ep">
+  <header class="ep-cab">
+    <span class="ep-num">Ep. 4</span>
+    <div><h3>Roubando ideias de outros mundos</h3><p>Academia, museu de ciências e time de futebol.</p></div>
+    <span class="ep-cont">17 ideias · acumulado 100</span>
+  </header>
+  <div class="blocos"><div class="bloco"><h4>Academia de ginástica <small>5</small></h4><ul><li class="ideia seu"><span class="quem">Adilson</span>Como na academia: metas e resultados visíveis fazem voltar</li><li class="ideia seu"><span class="quem">Adilson</span>Aluno volta quando vê o próprio avanço E o avanço do robô — duas evoluções lado a lado</li><li class="ideia mary"><span class="quem">Mary</span>Ficha de evolução dupla: de um lado a curva do robô (batidas por tentativa), do outro a do aluno (quiz rápido de conceitos no início e fim de cada episódio)</li><li class="ideia mary"><span class="quem">Mary</span>Foto 'antes e depois' do cérebro: tabela Q do dia 1 x dia 30 em mapa de cor, como a foto de evolução da academia</li><li class="ideia mary"><span class="quem">Mary</span>Metas da semana combinadas com a turma (ex.: robô completa o labirinto com menos de 20 batidas) e check-in no início da aula</li></ul></div><div class="bloco"><h4>Museu de ciências <small>5</small></h4><ul><li class="ideia seu"><span class="quem">Adilson</span>Vídeo interativo em que o visitante participa do aprendizado do robô e vê o resultado rápido</li><li class="ideia mary"><span class="quem">Mary</span>Totem 'Treine um robô em 3 minutos': tela de toque + arena pequena; visitante dá recompensas e vê a curva cair — novo cliente: museus, centros de ciência, feiras, shoppings, SESI/SENAI em eventos</li><li class="ideia mary"><span class="quem">Mary</span>Leve o cérebro para casa: ao sair, QR code com o cérebro que o visitante treinou, que continua no simulador grátis (funil para o produto)</li><li class="ideia mary"><span class="quem">Mary</span>Placar do dia no museu: 'o cérebro mais esperto de hoje' — visitantes competem sem se conhecer</li><li class="ideia mary"><span class="quem">Mary</span>Locação do totem para eventos e feiras de ciências escolares (receita recorrente sem venda de kit)</li></ul></div><div class="bloco"><h4>Time de futebol <small>7</small></h4><ul><li class="ideia seu"><span class="quem">Adilson</span>Dar identidade ao robô com o nome da turma</li><li class="ideia seu"><span class="quem">Adilson</span>Dar ao robô a personalidade da turma ou da escola</li><li class="ideia seu"><span class="quem">Adilson</span>Transformar o robô no mascote da turma/escola</li><li class="ideia mary"><span class="quem">Mary</span>Kit de torcida: casca, cores e 'grito' do robô escolhidos pela turma; o OLED mostra o escudo da turma ao ligar</li><li class="ideia seu"><span class="quem">Adilson</span>No fim do ano, o robô-mascote vira troféu da turma</li><li class="ideia seu"><span class="quem">Adilson</span>O robô-troféu serve de inspiração para as próximas turmas</li><li class="ideia seu"><span class="quem">Adilson</span>O cérebro da turma formada ajuda as próximas turmas a chegar aonde ela chegou (herança de conhecimento entre gerações)</li></ul></div></div>
+</section>
+
+  <h2>A escolha: impacto contra esforço</h2>
+  <p class="sub">As 100 ideias foram agrupadas em 8 grupos. Todos os grupos têm impacto alto; o que os separa é o esforço. Em laranja, os 4 escolhidos para começar, todos testáveis nas turmas antes de vender qualquer kit.</p>
+  <div class="mapa" role="img" aria-label="Os 8 grupos de ideias em quatro quadrantes de impacto e esforço; os grupos 1, 2, 3 e 5 foram escolhidos">
+    <div class="quad"><h4>Ganhos rápidos</h4><small>alto impacto · pouco esforço</small><ul><li class="ok"><b>1</b>Temporada e suspense</li><li class="ok"><b>3</b>Alunos como robô (desplugado)</li><li class=""><b>4</b>Identidade e mascote</li><li class="ok"><b>5</b>Interdisciplinar</li></ul></div><div class="quad"><h4>Grandes apostas</h4><small>alto impacto · muito esforço</small><ul><li class="ok"><b>2</b>Aceleradores de resultado</li><li class=""><b>6</b>Resultado para mostrar</li><li class=""><b>7</b>Produto e hardware</li><li class=""><b>8</b>Canais e negócio</li></ul></div>
+  </div>
+
+  <section class="climax">
+    <span class="selo">Episódio final · a síntese</span>
+    <h2>O robô não é um kit. É um personagem.</h2>
+    <p>A conclusão do Adilson: <strong>o robô como tutor e mascote liga tudo.</strong> Um mascote-tutor que aprende com a turma e explica como pensa. Os grupos escolhidos viram capítulos da vida dele.</p>
+    <ol class="caps"><li><b>História</b><span>Temporada, episódios, suspense e reviravoltas</span><em>grupo 1</em></li><li><b>Evolução visível</b><span>Avançar no tempo, conquistas, evolução dupla do robô e do aluno</span><em>grupo 2</em></li><li><b>No lugar dele</b><span>Alunos viram o robô: quadra, tabuleiro, corrida humano x máquina</span><em>grupo 3</em></li><li><b>O que ele ensina</b><span>Matemática, Estatística, Física, Geografia</span><em>grupo 5</em></li><li><b>Legado</b><span>Troféu, inspiração e o cérebro herdado pela próxima turma</span><em>mascote</em></li></ol>
+    <div class="dores">
+      <div><b>Professor sem formação</b>O tutor se explica sozinho e conduz a aula.</div>
+      <div><b>Aluno imediatista</b>O mascote tem carisma e reage na hora.</div>
+      <div><b>Coordenação</b>O mascote vira marca e vídeo da escola.</div>
+    </div>
+    <p style="margin-top:20px">O mesmo personagem vive no simulador grátis, no kit desplugado, no robô e no totem de museu. O Robô 2, que reconhece cores e cartões, pode ser o irmão que enxerga.</p>
+  </section>
+
+  <p class="rodape">Gerada a partir do registro da sessão (_bmad-output/brainstorming/brainstorm-ideias-robo-qlearning-2026-10-15/.memlog.md). Baseada também na pesquisa de viabilidade de mercado da mesma data.</p>
+</main>
+</body>
+</html>
