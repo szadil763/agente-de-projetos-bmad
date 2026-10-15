@@ -1,0 +1,8 @@
+# Digest r3 — produto, riscos e lacuna de conteúdo (acesso 2026-10-15)
+
+- claim: 18650 pode superaquecer, explodir ou incendiar se mal usada; há células falsificadas e com/sem proteção | source: https://wiki.dfrobot.com/mbt0050-18650/docs/22701 ; https://libros.catedu.es/books/robotica-con-raspberry-y-python-alphabot/page/12-desventajas/export/pdf | conf: high (2 fontes) | class: risco
+- claim: robôs educacionais (Maqueen Plus V3) aceitam AA (NiMH) como alternativa à 18650 | source: https://wiki.dfrobot.com/mbt0050-18650/docs/22701 | conf: medium | class: produto
+- claim: ACEBOTT kit ESP32 "Fábrica Inteligente" R$ 2.207,12 com 16 aulas e slides para professor (Casas Bahia) | source: https://www.casasbahia.com.br/kit-acebott-iniciante-3em1-esp32-iot-fabrica-inteligente-para-programacao-e-educacao-steam-para-adolescentes/p/1582242008 | conf: medium | class: pricing concorrente
+- claim: RoboXperience (SBC): ecossistema maker de baixo custo com impressão 3D e 17 experimentos BNCC, motivado pelo alto custo de kits proprietários na rede pública | source: https://sol.sbc.org.br/index.php/ideia/article/download/43457/43220/ | conf: medium | class: concorrente/validação de tese
+- claim: material de Q-learning com robô em sala existe em espanhol (CFR Ferrol, 3 estados × 3 ações); não foi encontrada atividade em português para EM | source: https://centros.edu.xunta.gal/cfrferrol/aulavirtual/mod/resource/view.php?id=22917 | conf: medium | class: lacuna/oportunidade
+- claim: LEGO NXT com Q-learning aprende a tarefa em menos de 100 iterações (dissertação U. Évora) | source: https://dspace.uevora.pt/rdpc/handle/10174/12283 | conf: medium | class: viabilidade técnica
